@@ -1,0 +1,34 @@
+{
+    "name": "developersunesis/lang2js",
+    "description": "A package to copy Laravel langs files for JS use",
+    "type": "library",
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.5",
+        "tedivm/jshrink": "dev-master"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Developersunesis\\Lang2js\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+          "Developersunesis\\Lang2js\\Tests\\": "tests"
+        }
+      },
+    "authors": [
+        {
+            "name": "Uche Emmanuel",
+            "email": "developersunesis@gmail.com"
+        }
+    ],
+    "scripts": {
+        "test" : "vendor/bin/phpunit tests"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "ext-json": "*"
+    }
+}
