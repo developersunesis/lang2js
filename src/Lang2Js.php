@@ -44,7 +44,7 @@ class Lang2Js
      * @param null $exports_path The path where the extracted files go to
      * @throws Exception
      */
-    public function export($exports_path = null)
+    public function export($exports_path = null): Lang2Js
     {
         if (isset($exports_path)) {
             $this->exports_path = $exports_path;
@@ -58,7 +58,7 @@ class Lang2Js
 
         // Convert the locales_path to a proper file location
         $_locales_path = $this->toBaseDir($this->locales_path);
-        $_exports_path = $this->toBaseDir($this->exports_path);
+        $_exports_path = $this->toBaseDir($this->exports_path, true);
 
         // Start : Interaction with the specified locales_path and exports_path
         if (!file_exists($_exports_path) && !mkdir($_exports_path, 0777, true)) {
@@ -112,17 +112,18 @@ class Lang2Js
      * @return string
      * @throws Exception
      */
-    private function toBaseDir($path): string
+    private function toBaseDir($path, $canCreate=false): string
     {
         if ($this->use_base_path) {
             $base_path = base_path();
             $path = "$base_path/$path";
         }
 
+        if($canCreate && !file_exists($path))
+            mkdir($path, 0777, true);
+
         $new_path = realpath($path);
         if ($new_path) return $new_path;
-        else if (mkdir($path, 0777, true))
-            return $this->toBaseDir($path);
         else throw new Exception("Bad directory path specified: $path");
     }
 
@@ -334,7 +335,7 @@ class Lang2Js
      * @param $js_export_index_name
      * @return $this
      */
-    public function setJsExportIndexName($js_export_index_name)
+    public function setJsExportIndexName($js_export_index_name): Lang2Js
     {
         $this->js_export_index_name = $js_export_index_name;
         return $this;
@@ -343,7 +344,7 @@ class Lang2Js
     /**
      * @param mixed $use_base_path
      */
-    public function setUseBasePath($use_base_path)
+    public function setUseBasePath($use_base_path): Lang2Js
     {
         $this->use_base_path = $use_base_path;
         return $this;
@@ -353,7 +354,7 @@ class Lang2Js
      * @param $path
      * @return $this
      */
-    public function setLocalesDir($path)
+    public function setLocalesDir($path): Lang2Js
     {
         $this->locales_path = $path;
         return $this;
@@ -363,7 +364,7 @@ class Lang2Js
      * @param $path
      * @return $this
      */
-    public function setExportsDir($path)
+    public function setExportsDir($path): Lang2Js
     {
         $this->exports_path = $path;
         return $this;

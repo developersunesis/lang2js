@@ -23,9 +23,16 @@ class Lang2jsTest extends TestCase
         $lang2js->setLocalesDir("$this->currentDirectory/../Resources/lang");
         $lang2js->setExportsDir("$this->currentDirectory/../Resources/exports");
 
+        self::assertNotNull($lang2js->getLocalesDir());
+        self::assertNotNull($lang2js->getUseBasePath());
+        self::assertNotNull($lang2js->getAvailableLocales());
+        self::assertNotNull($lang2js->getExportsDir());
+        self::assertNotNull($lang2js->getJsExportIndexName());
+
         // confirm paths are being resolved
         $this->assertStringNotContainsString('..', $lang2js->getLocalesDir());
         $this->assertStringNotContainsString('..', $lang2js->getExportsDir());
+
     }
 
     /**
@@ -94,22 +101,61 @@ class Lang2jsTest extends TestCase
 
         $lang2js->export();
 
-        $availableLocales = ['en', 'fr'];
-        $availableLocales = array_map(function($value){
+        $availableLocales = $lang2js->getAvailableLocales(false);
+        $availableLocales = array_map(function ($value) {
             return "$value.min.js";
         }, $availableLocales);
         $availableFiles = scandir($lang2js->getExportsDir());
 
-        foreach($availableLocales as $locale){
+        foreach ($availableLocales as $locale) {
+            self::assertContains($locale, $availableFiles);
+        }
+    }
+
+    public function testFacades()
+    {
+        $lang2js = L2J::setUseBasePath(false)
+            ->setExportsDir("$this->currentDirectory/../Resources/exports")
+            ->setLocalesDir("$this->currentDirectory/../Resources/lang")
+            ->export();
+
+        $availableLocales = $lang2js->getAvailableLocales(false);
+        $availableLocales = array_map(function ($value) {
+            return "$value.min.js";
+        }, $availableLocales);
+        $availableFiles = scandir($lang2js->getExportsDir());
+
+        foreach ($availableLocales as $locale) {
+            self::assertContains($locale, $availableFiles);
+        }
+    }
+
+    public function testFacades_withCustomIndexFileName()
+    {
+        $lang2js = L2J::setUseBasePath(false)
+            ->setExportsDir("$this->currentDirectory/../Resources/exports")
+            ->setLocalesDir("$this->currentDirectory/../Resources/lang")
+            ->setJsExportIndexName("test.min.js")
+            ->export();
+
+        $this->assertTrue(file_exists($lang2js->getExportsDir().'/test.min.js'));
+
+        $availableLocales = $lang2js->getAvailableLocales(false);
+        $availableLocales = array_map(function ($value) {
+            return "$value.min.js";
+        }, $availableLocales);
+        $availableFiles = scandir($lang2js->getExportsDir());
+
+        foreach ($availableLocales as $locale) {
             self::assertContains($locale, $availableFiles);
         }
     }
 
     function testCommandInterface(){
-        $importPath = "$this->currentDirectory/../Resources/lang";
+        $localesPath = "$this->currentDirectory/../Resources/lang";
         $exportPath = "$this->currentDirectory/../Resources/cmd_exports";
 
-        Artisan::call("lang2js:export --exportDir=$exportPath --importDir=$importPath --ubp");
+        Artisan::call("lang2js:export exportDir=$exportPath localesDir=$localesPath --useBasePath=false");
 
         $availableLocales = ['en', 'fr'];
         $availableLocales = array_map(function($value){
