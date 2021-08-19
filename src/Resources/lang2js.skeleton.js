@@ -14,6 +14,4 @@ try {
         return strings === undefined || strings[string] === undefined
             || strings[string] === null ? string : strings[string];
     }
-} catch (e) {
-    console.log(e)
-}
+} catch (e) {}

@@ -47,7 +47,35 @@ class Lang2jsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public function testIsFileBeingCreated(){
+    public function testIsFileBeingCreated_UseBasePathIsFalse(){
+        $lang2js = new Lang2js();
+        $lang2js->setUseBasePath(false);
+        $lang2js->setLocalesDir("$this->currentDirectory/../Resources/lang");
+        $lang2js->setExportsDir("$this->currentDirectory/../Resources/exports");
+
+        // confirm paths are being resolved
+        $this->assertStringNotContainsString('..', $lang2js->getExportsDir());
+
+        // export file is being created
+        $this->assertTrue(file_exists($lang2js->getExportsDir()));
+
+        $lang2js->export();
+
+        $availableLocales = $lang2js->getAvailableLocales(false);
+        $availableLocales = array_map(function($value){
+            return "$value.min.js";
+        }, $availableLocales);
+        $availableFiles = scandir($lang2js->getExportsDir());
+
+        foreach($availableLocales as $locale){
+            self::assertContains($locale, $availableFiles);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testIsFileBeingCreated_UseBasePathIsTrue(){
         $lang2js = new Lang2js();
         $lang2js->setExportsDir("resources/exports");
 

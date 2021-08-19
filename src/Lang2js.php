@@ -57,7 +57,7 @@ class Lang2js
 
         // Convert the locales_path to a proper file location
         $_locales_path = $this->toBaseDir($this->locales_path);
-        $_exports_path = $this->exports_path;
+        $_exports_path = $this->toBaseDir($this->exports_path);
 
         // Start : Interaction with the specified locales_path and exports_path
         if (!file_exists($_exports_path) && !mkdir($_exports_path, 0777, true)) {

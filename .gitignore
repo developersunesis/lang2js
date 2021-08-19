@@ -23,3 +23,6 @@ Homestead.json
 .phpunit.result.cache
 
 .idea/
+
+tests/Resources/exports
+tests/Resources/cmd_exports
