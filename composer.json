@@ -35,10 +35,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Lang2JsServiceProvider"
+                "Developersunesis\\Lang2js\\Lang2JsServiceProvider"
             ],
             "aliases" : {
-                "L2J" : "Lang2Js"
+                "L2J" : "Developersunesis\\Lang2js\\Facades\\Lang2Js"
             }
         }
     }
