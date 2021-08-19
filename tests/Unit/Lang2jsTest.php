@@ -5,6 +5,7 @@ namespace Developersunesis\Lang2js\Tests\Unit;
 use Developersunesis\Lang2js\Lang2js;
 use Developersunesis\Lang2js\Tests\TestCase;
 use Exception;
+use Illuminate\Support\Facades\Artisan;
 
 class Lang2jsTest extends TestCase {
 
@@ -59,11 +60,30 @@ class Lang2jsTest extends TestCase {
 
         $lang2js->export();
 
-        $availableLocales = $lang2js->getAvailableLocales(false);
+        $availableLocales = ['en', 'fr'];
         $availableLocales = array_map(function($value){
             return "$value.min.js";
         }, $availableLocales);
         $availableFiles = scandir($lang2js->getExportsDir());
+
+        foreach($availableLocales as $locale){
+            self::assertContains($locale, $availableFiles);
+        }
+    }
+
+    function testCommandInterface(){
+        $importPath = "$this->currentDirectory/../Resources/lang";
+        $exportPath = "$this->currentDirectory/../Resources/cmd_exports";
+
+        Artisan::call("lang2js:export --exportDir=$exportPath --importDir=$importPath --ubp");
+
+        $availableLocales = ['en', 'fr'];
+        $availableLocales = array_map(function($value){
+            return "$value.min.js";
+        }, $availableLocales);
+
+        $exportPath = realpath($exportPath);
+        $availableFiles = scandir($exportPath);
 
         foreach($availableLocales as $locale){
             self::assertContains($locale, $availableFiles);
