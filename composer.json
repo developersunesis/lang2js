@@ -1,6 +1,7 @@
 {
     "name": "developersunesis/lang2js",
-    "description": "A package to copy Laravel langs files for JS use",
+    "keywords": ["laravel", "export", "lang", "locale", "js"],
+    "description": "A package to copy Laravel lang files for JS use",
     "type": "library",
     "require-dev": {
         "orchestra/testbench": "^6.0",
@@ -30,5 +31,15 @@
     "minimum-stability": "dev",
     "require": {
         "ext-json": "*"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Lang2JsServiceProvider"
+            ],
+            "aliases" : {
+                "L2J" : "Lang2Js"
+            }
+        }
     }
 }

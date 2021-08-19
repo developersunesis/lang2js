@@ -6,19 +6,19 @@ use Exception;
 use Illuminate\Support\Str;
 use JShrink\Minifier;
 
-class Lang2js
+class Lang2Js
 {
 
     private $locales_path, $exports_path, $use_base_path, $js_export_index_name;
 
     // Environment names
-    private string $_locales_path_name = 'lang2js.locale.path';
-    private string $_exports_path_name = 'lang2js.export.path';
-    private string $_use_base_path_name = 'lang2js.use.base.path';
-    private string $_js_export_index_file_name = 'lang2js.export.index.name';
+    private $_locales_path_name = 'lang2js.locale.path';
+    private $_exports_path_name = 'lang2js.export.path';
+    private $_use_base_path_name = 'lang2js.use.base.path';
+    private $_js_export_index_file_name = 'lang2js.export.index.name';
 
-    private array $_use_files_extension = ['php', 'json'];
-    private string $name_prefix = 'LANG2JS_';
+    private $_use_files_extension = ['php', 'json'];
+    private $name_prefix = 'LANG2JS_';
 
     function __construct()
     {
@@ -40,7 +40,8 @@ class Lang2js
     /**
      * This function copies the Laravel lang from the specified import folder to
      * the exports_path
-     * @param null $exports_path  The path where the extracted files go to
+     * @return $this
+     * @param null $exports_path The path where the extracted files go to
      * @throws Exception
      */
     public function export($exports_path = null)
@@ -101,6 +102,8 @@ class Lang2js
 
         // Export all locales content now to usable js
         $this->createJSExportForFiles($locale_file_paths);
+
+        return $this;
     }
 
     /**
@@ -118,7 +121,7 @@ class Lang2js
 
         $new_path = realpath($path);
         if ($new_path) return $new_path;
-        else if(mkdir($path, 0777, true))
+        else if (mkdir($path, 0777, true))
             return $this->toBaseDir($path);
         else throw new Exception("Bad directory path specified: $path");
     }
@@ -137,12 +140,12 @@ class Lang2js
 
         // Generate the AVAILABLE_LOCALE object's content
         // i.e. const AVAILABLE_LOCALES={'LANG2JS_en':LANG2JS_en,'LANG2JS_fr':LANG2JS_fr}
-        foreach($provideAvailableLocales as $locale){
-            // In attempt to replace string ('$AVAILABLE_LOCALES') in the generic lang2js.skeleton.js
+        foreach ($provideAvailableLocales as $locale) {
+            // In attempt to replace ('$AVAILABLE_LOCALES') in the generic lang2js.skeleton.js
             $availableLocalesString .= "'$locale': $locale, ";
         }
 
-        // Remove the last , added to the string if any
+        // Remove the last , added to the if any
         $availableLocalesString = Str::replaceLast(',', '', $availableLocalesString);
 
         // Replace '$AVAILABLE_LOCALES' now
@@ -163,14 +166,14 @@ class Lang2js
      * @return array
      * @throws Exception
      */
-    public function getAvailableLocales(bool $prefixed =  true): array
+    public function getAvailableLocales(bool $prefixed = true): array
     {
         $available_locales = scandir($this->getLocalesDir());
-        $available_locales = array_filter($available_locales, function($value) {
+        $available_locales = array_filter($available_locales, function ($value) {
             return (Str::contains($value, '.json')
                 || !Str::contains($value, '.'));
         });
-        return array_map(function($value) use($prefixed) {
+        return array_map(function ($value) use ($prefixed) {
             $value = str_replace('.json', '', $value);
             return $prefixed ? "$this->name_prefix$value" : $value;
         }, $available_locales);
@@ -193,15 +196,15 @@ class Lang2js
             $locale_path = "$locale_path/$locale";
 
             foreach ($locale_file_paths as $filepath) {
-                if(Str::startsWith($filepath, $locale_path)) {
+                if (Str::startsWith($filepath, $locale_path)) {
                     $path_parts = pathinfo($filepath);
                     $filename = $path_parts['filename'];
                     $extension = $path_parts['extension'];
                     $new_values = [];
-                    if($extension == 'php'){
+                    if ($extension == 'php') {
                         $file_array_content = include($filepath);
                         $new_values = $this->addLocaleExportContent($file_array_content, $filename);
-                    } else if($extension == 'json'){
+                    } else if ($extension == 'json') {
                         $file_array_content = file_get_contents($filepath);
                         $file_array_content = json_decode($file_array_content, true);
                         $new_values = $this->addLocaleExportContent($file_array_content);
@@ -224,11 +227,11 @@ class Lang2js
      * @param null $filename
      * @return array
      */
-    private function addLocaleExportContent($input, $filename=null): array
+    private function addLocaleExportContent($input, $filename = null): array
     {
         $new_array = [];
-        if(is_array($input)){
-            foreach ($input as $key=>$item){
+        if (is_array($input)) {
+            foreach ($input as $key => $item) {
                 $new_name = $filename ? "$filename.$key" : $key;
                 $new_array[$new_name] = $item;
             }
@@ -241,7 +244,8 @@ class Lang2js
      * @return false|string
      * @throws Exception
      */
-    private function getResourceFile($filename){
+    private function getResourceFile($filename)
+    {
         $path = __DIR__;
         $path = "$path/Resources/$filename";
         if (!$handle = fopen($path, 'r')) {
@@ -253,7 +257,8 @@ class Lang2js
     /**
      * @throws Exception
      */
-    private function createFileInExports($filename, $contents){
+    private function createFileInExports($filename, $contents)
+    {
         $path = $this->getExportsDir();
         $path = "$path/$filename";
         if (file_exists($path)) unlink($path);
@@ -326,11 +331,13 @@ class Lang2js
     }
 
     /**
-     * @param mixed $js_export_index_name
+     * @param $js_export_index_name
+     * @return $this
      */
     public function setJsExportIndexName($js_export_index_name)
     {
         $this->js_export_index_name = $js_export_index_name;
+        return $this;
     }
 
     /**
@@ -339,21 +346,26 @@ class Lang2js
     public function setUseBasePath($use_base_path)
     {
         $this->use_base_path = $use_base_path;
+        return $this;
     }
 
     /**
      * @param $path
+     * @return $this
      */
     public function setLocalesDir($path)
     {
         $this->locales_path = $path;
+        return $this;
     }
 
     /**
      * @param $path
+     * @return $this
      */
     public function setExportsDir($path)
     {
         $this->exports_path = $path;
+        return $this;
     }
 }
