@@ -6,7 +6,7 @@
 
 const AVAILABLE_LOCALES = {'$AVAILABLE_LOCALES':''};
 try {
-    function __(string, locale = undefined) {
+    function __(string, locale) {
         if(locale === undefined) return string
 
         locale = '$PREFIX'.concat(locale)
