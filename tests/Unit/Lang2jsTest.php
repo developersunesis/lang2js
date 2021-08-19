@@ -6,6 +6,7 @@ use Developersunesis\Lang2js\Facades\Lang2Js as L2J;
 use Developersunesis\Lang2js\Lang2Js;
 use Developersunesis\Lang2js\Tests\TestCase;
 use Exception;
+use Illuminate\Support\Facades\Artisan;
 
 class Lang2jsTest extends TestCase
 {
@@ -93,31 +94,32 @@ class Lang2jsTest extends TestCase
 
         $lang2js->export();
 
-        $availableLocales = $lang2js->getAvailableLocales(false);
-        $availableLocales = array_map(function ($value) {
+        $availableLocales = ['en', 'fr'];
+        $availableLocales = array_map(function($value){
             return "$value.min.js";
         }, $availableLocales);
         $availableFiles = scandir($lang2js->getExportsDir());
 
-        foreach ($availableLocales as $locale) {
+        foreach($availableLocales as $locale){
             self::assertContains($locale, $availableFiles);
         }
     }
 
-    public function testFacades()
-    {
-        $lang2js = L2J::setUseBasePath(false)
-            ->setExportsDir("$this->currentDirectory/../Resources/exports")
-            ->setLocalesDir("$this->currentDirectory/../Resources/lang")
-            ->export();
+    function testCommandInterface(){
+        $importPath = "$this->currentDirectory/../Resources/lang";
+        $exportPath = "$this->currentDirectory/../Resources/cmd_exports";
 
-        $availableLocales = $lang2js->getAvailableLocales(false);
-        $availableLocales = array_map(function ($value) {
+        Artisan::call("lang2js:export --exportDir=$exportPath --importDir=$importPath --ubp");
+
+        $availableLocales = ['en', 'fr'];
+        $availableLocales = array_map(function($value){
             return "$value.min.js";
         }, $availableLocales);
-        $availableFiles = scandir($lang2js->getExportsDir());
 
-        foreach ($availableLocales as $locale) {
+        $exportPath = realpath($exportPath);
+        $availableFiles = scandir($exportPath);
+
+        foreach($availableLocales as $locale){
             self::assertContains($locale, $availableFiles);
         }
     }
