@@ -5,8 +5,7 @@
     "type": "library",
     "require-dev": {
         "orchestra/testbench": "^6.0",
-        "phpunit/phpunit": "^9.5",
-        "tedivm/jshrink": "dev-master"
+        "phpunit/phpunit": "^9.5"
     },
     "license": "MIT",
     "autoload": {
@@ -30,7 +29,8 @@
     },
     "minimum-stability": "dev",
     "require": {
-        "ext-json": "*"
+        "ext-json": "*",
+        "tedivm/jshrink": "dev-master"
     },
     "extra": {
         "laravel": {
