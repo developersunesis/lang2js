@@ -12,9 +12,52 @@
   </a>
 </p>
 
-> A Laravel package to copy lang/locale files for use in JavaScript
+> A package that provides an easy way to export and sync Laravel localization files for JavaScript use
+## Problem
+I have a Laravel project/website, while thinking of how to sync my localization and translation files from the app with
+for JavaScript usage; my first approach was to have the localization content stored in the `localStorage` of the browser 
+when a user first visits the app. While this was a goto solution, I realized this wasn't efficient enough, because it meant
+that the first page the user visits might not have its strings translated until the localization is available 
+already in the `localStorage`. Another solution, was to inject the localization content directly into a `DOMElement`: 
+`<data id='lang' value="{{getAllLangContent()}}" />`, clearly there was a trade-off as this drastically increased the page load time but solves the
+problem of the translations not being available.
 
-### 🏠 [Homepage](https://github.com/developersunesis/lang2js)
+#### Final Solution
+My final solution which is currently in use was to have a package periodically sync the localization files for JavaScript use.
+The package reads the following files:
+```
+resources
+├── lang
+│   ├── en
+│   │   ├── auth.php
+│   │   └── dashboard.php
+│   ├── fr
+│   │   ├── auth.php
+│   │   └── dashboard.php
+```
+and converts it to minified js files
+```
+public
+├── js
+│   ├── locales
+│   │   ├── en.min.js
+│   │   ├── fr.min.js
+│   │   └── lang2js.min.js
+```
+So each locale that needs to be used is imported into my blade component 
+```html
+...
+<footer>
+    <script src="{{assets('js/locales/en.min.js')}}"></script>
+    <script src="{{assets('js/locales/fr.min.js')}}"></script>
+    <script src="{{assets('js/locales/lang2js.min.js')}}"></script>
+    <script>
+       let helloText = __("index.TEST_2", 'en') // this function is provided by `lang2js.min.js`
+       document.getElementById("hellotext").innerHTML = helloText
+    </script>
+</footer>
+...
+```
 
 ## Install
 
@@ -23,15 +66,27 @@ composer require developersunesis/lang2js
 ```
 
 ## Usage
-
+You can simply run a command
 ```sh
-php artisan lang2js:help
+lang2js:export exportDir=:exportDir
 ```
+The command above reads the translation files from Laravel default lang folder.
+<br/><br/>But if you have a custom location you want the translation files to be read from, you can use the following
+```shell
+lang2js:export exportDir=:exportPath localesDir=:localesPath
+```
+The two commands above uses the base path of the app and the path you specified as their absolute path.
+<br/>Example:
+```shell
+lang2js:export exportDir=/public/js/locales localesDir=/resources/lang
 
-## Run tests
-
-```sh
-php artisan lang2js:tests
+# Uses full path
+# exportDir == {YOUR_CURRENT_APP_LOCATION}/public/js/locales
+# localesDir == {YOUR_CURRENT_APP_LOCATION}/public/resources/lang
+```
+To disable to command from using your base app file, you can add an option to the command as below
+```shell
+lang2js:export exportDir=C:/manners/Documents/public/js/locales localesDir=C:/manners/Documents/resources/lang --useBasePath=false
 ```
 
 ## Author
