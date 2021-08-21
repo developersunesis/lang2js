@@ -14,7 +14,7 @@
 
 > A package that provides an easy way to export and sync Laravel localization files for JavaScript use
 ## Problem
-I have a Laravel project/website, while thinking of how to sync my localization and translation files from the app with
+I have a Laravel project/website, while thinking of how to sync my localization and translation files from the app
 for JavaScript usage; my first approach was to have the localization content stored in the `localStorage` of the browser 
 when a user first visits the app. While this was a goto solution, I realized this wasn't efficient enough, because it meant
 that the first page the user visits might not have its strings translated until the localization is available 
