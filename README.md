@@ -68,17 +68,17 @@ composer require developersunesis/lang2js
 ## Usage
 You can simply run a command
 ```sh
-lang2js:export exportDir=:exportDir
+php artisan lang2js:export exportDir=:exportDir
 ```
 The command above reads the translation files from Laravel default lang folder.
 <br/><br/>But if you have a custom location you want the translation files to be read from, you can use the following
 ```shell
-lang2js:export exportDir=:exportPath localesDir=:localesPath
+php artisan lang2js:export exportDir=:exportPath localesDir=:localesPath
 ```
 The two commands above uses the base path of the app and the path you specified as their absolute path.
 <br/>Example:
 ```shell
-lang2js:export exportDir=/public/js/locales localesDir=/resources/lang
+php artisan lang2js:export exportDir=/public/js/locales localesDir=/resources/lang
 
 # Uses full path
 # exportDir == {YOUR_CURRENT_APP_LOCATION}/public/js/locales
@@ -86,7 +86,27 @@ lang2js:export exportDir=/public/js/locales localesDir=/resources/lang
 ```
 To disable to command from using your base app file, you can add an option to the command as below
 ```shell
-lang2js:export exportDir=C:/manners/Documents/public/js/locales localesDir=C:/manners/Documents/resources/lang --useBasePath=false
+php artisan lang2js:export exportDir=C:/manners/Documents/public/js/locales localesDir=C:/manners/Documents/resources/lang --useBasePath=false
+```
+There are various use cases, one of which is to create a schedule for the package to resync the JavaScript translations
+periodically, this is very useful if you make use of laravel localizations that can be dynamically changed
+```injectablephp
+$command = "php artisan lang2js:export exportDir=/public/js/locales"
+$schedule->command($command)
+          ->weekdays()
+          ->daily();
+
+# or through a facade function call
+$schedule->call(function () {
+    $lang2js = new Lang2js();
+    $lang2js->setExportsDir("resources/exports");
+    $lang2js->export();
+})->weekly()->daily();
+
+# or through a facade function call
+$schedule->call(function () {
+    L2J::setExportsDir("/public/js/locales")->export();
+})->weekly()->daily();
 ```
 
 ## Author
