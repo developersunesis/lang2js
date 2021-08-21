@@ -90,7 +90,7 @@ php artisan lang2js:export exportDir=C:/manners/Documents/public/js/locales loca
 ```
 There are various use cases, one of which is to create a schedule for the package to resync the JavaScript translations
 periodically, this is very useful if you make use of laravel localizations that can be dynamically changed
-```injectablephp
+```php
 $command = "php artisan lang2js:export exportDir=/public/js/locales"
 $schedule->command($command)
           ->weekdays()
